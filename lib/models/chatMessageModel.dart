@@ -4,5 +4,6 @@ class ChatMessage{
   String messageContent;
   String messageType;
   bool isUrl;
-  ChatMessage({required this.messageContent, required this.messageType,required this.isUrl});
+  String contentType;
+  ChatMessage({required this.messageContent, required this.messageType,required this.isUrl,required this.contentType});
 }
