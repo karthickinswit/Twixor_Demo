@@ -8,8 +8,12 @@ import 'HomePage.dart';
 import 'package:connectivity/connectivity.dart';
 
 class ChatPage extends StatelessWidget {
+
+  ConnectivityResult? connectivity;
   @override
   Widget build(BuildContext context) {
+    final bool connected = connectivity!= ConnectivityResult.none;
+   // print(connected);
     return SafeArea(
       child: Scaffold(
           appBar:
@@ -17,7 +21,8 @@ class ChatPage extends StatelessWidget {
             centerTitle: true,
             title: MyCustomAppBar(
               height: 100,
-              isOnline:"True"
+              isOnline:connected ? "Online" : "Offline",
+              
             ),
           ),
 
@@ -69,21 +74,23 @@ class ChatPage extends StatelessWidget {
 
 class MyCustomAppBar extends StatelessWidget
     implements PreferredSizeWidget, NamedIcon {
+
   final double height;
   final String isOnline;
-  Future<String> check() async {
-    var connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult == ConnectivityResult.mobile) {
-      return "Online";
-    } else if (connectivityResult == ConnectivityResult.wifi) {
-      return "Online";
-    }
-    return "Offline";
-  }
+  // Future<String> check() async {
+  //   var connectivityResult = await (Connectivity().checkConnectivity());
+  //   if (connectivityResult == ConnectivityResult.mobile) {
+  //     return "Online";
+  //   } else if (connectivityResult == ConnectivityResult.wifi) {
+  //     return "Online";
+  //   }
+  //   return "Offline";
+  // }
 
   const MyCustomAppBar({
     Key? key,
     required this.height, required this.isOnline,
+
   }) : super(key: key);
 
   @override
@@ -119,7 +126,7 @@ class MyCustomAppBar extends StatelessWidget
                Image.asset('asset/images/online.png', width: 20.0, height: 20.0,),
                             Text(
                               //'check().then((intenet) { if (intenet != null && intenet) { return "Online";}return "Offline"});',
-                              '${check()}',
+                              "${isOnline}",
                               textDirection: TextDirection.rtl,
                               textAlign: TextAlign.right,
                               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),),
