@@ -1,7 +1,11 @@
+
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import 'ChatPage.dart';
 import 'Chat2Page.dart';
+import 'helper_files/loader.dart';
 void main() {
   runApp(MyApp());
 }
@@ -17,11 +21,13 @@ class MyApp extends StatelessWidget {
 }
 
 class LoginDemo extends StatefulWidget {
+  late bool isLoading ;
   @override
   _LoginDemoState createState() => _LoginDemoState();
 }
 
 class _LoginDemoState extends State<LoginDemo> {
+  final GlobalKey<State> _LoaderDialog = new GlobalKey<State>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -84,6 +90,12 @@ class _LoginDemoState extends State<LoginDemo> {
                   color: Colors.blue, borderRadius: BorderRadius.circular(20)),
               child: FlatButton(
                 onPressed: () {
+
+                  //LoaderDialog.showLoadingDialog(context, _LoaderDialog);
+                 // sleep(const Duration(seconds: 5));
+
+                  //Navigator.of(_LoaderDialog.currentContext,rootNavigator: true).pop();
+
                   Navigator.push(
                       context, MaterialPageRoute(builder: (_) => profilePage()));
                 },

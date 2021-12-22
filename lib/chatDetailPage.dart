@@ -1,3 +1,4 @@
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -18,6 +19,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:developer';
 import 'Chat2Page.dart';
+import 'helper_files/webView.dart';
 import 'dart:convert';
 
 
@@ -57,6 +59,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
 
   //File fileImg;
   _getFromGallery() async {
+  //  picker.pickImage(source: source)
     var pickedFile = (await picker.pickImage(
       source: ImageSource.gallery,
     ));
@@ -212,8 +215,8 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
             padding: EdgeInsets.only(top: 10, bottom: 50),
             // physics: ClampingScrollPhysics(),
             itemBuilder: (context, index) {
-              print("inspect");//String jsonString = toJson(messages);
-              messages.map((e) => print(e));
+              //print("inspect");//String jsonString = toJson(messages);
+              //messages.map((e) => print(e));
               print(messages[0].isUrl);
               return Container(
                 padding: EdgeInsets.only(
@@ -229,7 +232,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                           .grey.shade200 : Colors.blue[200]),
                     ),
                     padding: EdgeInsets.all(16),
-                    child: (messages[index].contentType=="img" ? imagePreview(File(imageFile.path)) :  (messages[index].isUrl==""?UrlPreview(index):textPreview(index))) ,
+                    child: (messages[index].contentType=="img" ? imagePreview(File(messages[index].messageContent)) :  (messages[index].isUrl==""?UrlPreview(index):textPreview(index))) ,
                   ),
                 ),
               );
@@ -591,15 +594,21 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
 
   Widget imagePreview(_image){
    // String _image1=_image;
-    return Container(
+    return new GestureDetector(
+        onTap: (){
+          Navigator.push(
+              context, MaterialPageRoute(builder: (_) => WebViewEx()));
+    },
+     child: Container(
       padding: const EdgeInsets.all(1.0),
         width: 100.0,
         height: 100.0,
       decoration: BoxDecoration(
           color: Colors.white,
           image: DecorationImage(
-              image: FileImage(_image), fit: BoxFit.cover)),
-    );
+              image:  FileImage(_image), fit: BoxFit.cover)),
+
+    ),);
   }
 
 
