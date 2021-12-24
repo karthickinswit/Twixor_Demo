@@ -2,6 +2,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:twixor_demo/Chatmain.dart';
+import 'API/apidata-service.dart';
+import 'helper_files/Websocket.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import 'ChatPage.dart';
 import 'Chat2Page.dart';
@@ -12,13 +16,32 @@ void main() {
 
 class MyApp extends StatelessWidget {
   @override
+
+  initState()
+  {
+
+  }
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: LoginDemo(),
     );
   }
+  void checkServiceStatus(
+      BuildContext context, PermissionWithService permission) async {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text((await permission.serviceStatus).toString()),
+    ));
+  }
+
+  Future<void> requestPermission(Permission permission) async {
+    final status = await permission.request();
+
+
+
+  }
 }
+
 
 class LoginDemo extends StatefulWidget {
   late bool isLoading ;
@@ -104,9 +127,33 @@ class _LoginDemoState extends State<LoginDemo> {
                   style: TextStyle(color: Colors.white, fontSize: 25),
                 ),
               ),
+
             ),
             SizedBox(
               height: 130,
+            ),
+            Container(
+              height: 50,
+              width: 250,
+              decoration: BoxDecoration(
+                  color: Colors.blue, borderRadius: BorderRadius.circular(20)),
+              child: FlatButton(
+                onPressed: () {
+
+                  //LoaderDialog.showLoadingDialog(context, _LoaderDialog);
+                  // sleep(const Duration(seconds: 5));
+
+                  //Navigator.of(_LoaderDialog.currentContext,rootNavigator: true).pop();
+
+                  // Navigator.push(
+                  //     context, MaterialPageRoute(builder: (_) => RestDemo()));
+                },
+                child: Text(
+                  'Test Page',
+                  style: TextStyle(color: Colors.white, fontSize: 25),
+                ),
+              ),
+
             ),
             Text('New User? Create Account')
           ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:twixor_demo/models/chatMessageModel.dart';
 import 'chatDetailPage.dart';
 
 class ConversationList extends StatefulWidget{
@@ -8,7 +9,9 @@ class ConversationList extends StatefulWidget{
   String time;
   bool isMessageRead;
   int msgindex;
-  ConversationList({required this.name,required this.messageText,required this.imageUrl,required this.time,required this.isMessageRead,required this.msgindex});
+  List<ChatMessage> messages;
+
+  ConversationList({required this.name,required this.messageText,required this.imageUrl,required this.time,required this.isMessageRead,required this.msgindex,required this.messages});
   @override
   _ConversationListState createState() => _ConversationListState();
 }
@@ -24,7 +27,7 @@ class _ConversationListState extends State<ConversationList> {
           var imageUrl=widget.imageUrl;
   print("conversationPage");
   print(widget.msgindex);
-          Navigator.push(context, MaterialPageRoute(builder: (context)=>ChatDetailPage(imageUrl,widget.name,widget.msgindex)));
+          Navigator.push(context, MaterialPageRoute(builder: (context)=>ChatDetailPage(imageUrl,widget.name,widget.msgindex,widget.messages)));
 
       },
       child: Container(

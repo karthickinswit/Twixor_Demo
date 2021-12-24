@@ -6,6 +6,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:twixor_demo/API/apidata-service.dart';
 import 'package:twixor_demo/helper_files/FileUploadWithHttp.dart';
 import 'package:twixor_demo/models/chatMessageModel.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -20,16 +21,17 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:developer';
 import 'Chat2Page.dart';
 import 'helper_files/webView.dart';
-import 'dart:convert';
-
+import 'API/apidata-service.dart';
 
 enum ImageSourceType { gallery, camera }
 class ChatDetailPage extends StatefulWidget{
    String? imageUrl;
    String? name;
    int? msgindex;
+   List<ChatMessage> messages;
    //File fileImg;
-  ChatDetailPage(this.imageUrl, this.name,this.msgindex);
+  ChatDetailPage(this.imageUrl, this.name,this.msgindex,this.messages);
+   //fetchPost()
 
   //ChatDetailPage(TextInputType text);
 
@@ -38,7 +40,7 @@ class ChatDetailPage extends StatefulWidget{
 
 
   @override
-  _ChatDetailPageState createState() => _ChatDetailPageState(this.imageUrl, this.name,this.msgindex,File(""));
+  _ChatDetailPageState createState() => _ChatDetailPageState(this.imageUrl, this.name,this.msgindex,File(""),this.messages);
 }
 
 
@@ -83,18 +85,23 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
   _onUrlChanged(String updatedUrl) {
     setState(() {
       _url = updatedUrl;
+      //fetchPost();
     });
   }
 
-  List<ChatMessage> messages = [
-    // ChatMessage(messageContent: "Hello, Will", messageType: "receiver"),
-    // ChatMessage(messageContent: "How have you been?", messageType: "receiver"),
-    // ChatMessage(messageContent: "Hey Kriss, I am doing fine dude. wbu?", messageType: "sender"),
-    // ChatMessage(messageContent: "ehhhh, doing OK.", messageType: "receiver"),
-    // ChatMessage(messageContent: "Is there any thing wrong?", messageType: "sender"),
-  ];
+  List<ChatMessage> messages = [];
 
-  _ChatDetailPageState(this.imageUrl, this.name, this.msgindex, this.imageFile);
+
+  _ChatDetailPageState(this.imageUrl, this.name, this.msgindex, this.imageFile,this.messages);
+  @override
+  initState()    {
+    super.initState();
+   //fetchPost();
+
+    print(messages.length);
+
+    super.setState(() {});
+  }
 
   // _ChatDetailPageState({Key? key,required this.imageUrl,});
 
@@ -232,7 +239,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                           .grey.shade200 : Colors.blue[200]),
                     ),
                     padding: EdgeInsets.all(16),
-                    child: (messages[index].contentType=="img" ? imagePreview(File(messages[index].messageContent)) :  (messages[index].isUrl==""?UrlPreview(index):textPreview(index))) ,
+                    child: CheckType(index,messages[index].url),
                   ),
                 ),
               );
@@ -293,7 +300,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                             new ChatMessage(messageContent: msgController.text,
                                 messageType: "sender",
                                 isUrl: Uri.parse(msgController.text).isAbsolute,
-                                contentType:"text"));
+                                contentType:"text",url:''));
                         print(messages[messages.length - 1].isUrl);
                         setState(() {});
                       }
@@ -311,6 +318,25 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
         ],
       ),
     );
+  }
+
+  CheckType(index,url)
+  {
+    if(messages[index].contentType=="img") {
+      if(messages[index].isUrl=="") {
+        return (UrlPreview(index));
+      }
+      else  return imagePreview(File(messages[index].messageContent),url);
+    }
+    if(messages[index].contentType=="doc") {
+      return docPreview(index, url);
+    }
+
+    if(messages[index].isUrl=="") {
+      return (UrlPreview(index));
+    }
+
+    else return textPreview(index);
   }
 
   Widget bottomSheet() {
@@ -413,7 +439,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
             //Text(preview);
             print(objFile.path);
             messages.add(new ChatMessage(
-                messageContent: objFile.path.toString(), messageType: "sender", isUrl: true,contentType:sendFileType
+                messageContent: objFile.path.toString(), messageType: "sender", isUrl: true,contentType:sendFileType,url:objFile.path.toString()
                 ));
           }
         }
@@ -524,7 +550,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                       messageType: "sender",
                       isUrl: Uri
                           .parse(msgController.text)
-                          .isAbsolute,contentType:"img"));
+                          .isAbsolute,contentType:"img",url:fileUrl.toString()));
                   print(messages[messages.length - 1].isUrl);
                   setState(() {});
                 },
@@ -591,13 +617,18 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     return Text(messages[index].messageContent,
       style: TextStyle(fontSize: 15),);
   }
-
-  Widget imagePreview(_image){
+  NetworkImage getNetworkImage(String url,String authKey){
+    Map<String, String> header = Map();
+    header["authentication-token"] = authKey;
+    return NetworkImage(url,headers: header);
+  }
+  Widget imagePreview(_image,url){
    // String _image1=_image;
+
     return new GestureDetector(
         onTap: (){
           Navigator.push(
-              context, MaterialPageRoute(builder: (_) => WebViewEx()));
+              context, MaterialPageRoute(builder: (_) => WebViewEx(url)));
     },
      child: Container(
       padding: const EdgeInsets.all(1.0),
@@ -606,10 +637,36 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
       decoration: BoxDecoration(
           color: Colors.white,
           image: DecorationImage(
-              image:  FileImage(_image), fit: BoxFit.cover)),
+              image: getNetworkImage(
+                  url,
+                  authToken), fit: BoxFit.cover)),
 
     ),);
   }
 
+
+
+
+  Widget docPreview(index,url){
+    // String _image1=_image;
+    return new GestureDetector(
+      onTap: (){
+        Navigator.push(
+            context, MaterialPageRoute(builder: (_) => WebViewEx(url)));
+      },
+      child: Text(messages[index].messageContent,
+        style: TextStyle(fontSize: 15),),);
+  }
+   fetchPost() async {
+    await getChats().then((value) {
+
+        this.messages=value;
+
+     });
+     // RestDemo obj1=new RestDemo();
+    //.then((value) => value) as List<ChatMessage>;
+
+
+  }
 
 }
