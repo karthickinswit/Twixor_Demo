@@ -19,8 +19,10 @@ class MyApp extends StatelessWidget {
 
   initState()
   {
-
+   // getPermission();
   }
+
+
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -145,8 +147,8 @@ class _LoginDemoState extends State<LoginDemo> {
 
                   //Navigator.of(_LoaderDialog.currentContext,rootNavigator: true).pop();
 
-                  // Navigator.push(
-                  //     context, MaterialPageRoute(builder: (_) => RestDemo()));
+                  Navigator.push(
+                      context, MaterialPageRoute(builder: (_) => SocketDemo()));
                 },
                 child: Text(
                   'Test Page',

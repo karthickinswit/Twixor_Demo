@@ -36,16 +36,19 @@ class ChatPageState extends State<SocketDemo>{
 
   channelconnect(){ //function to connect
     try{
-      channel = IOWebSocketChannel.connect("ws://aim.twixor.com/actions?token="+Uri.encodeComponent("D+hsmfpocX0zksWgM8BC+5JI8xHugmxj/+LYQc521vwfXZJCEMLuKFgxM9RtZPcl")); //channel IP : Port\\"ws://192.168.0.109:6060/$myid"
+        channel = IOWebSocketChannel.connect("wss://aim.twixor.com/actions?token="+Uri.encodeComponent("D+hsmfpocX0zksWgM8BC+5JI8xHugmxj/+LYQc521vwfXZJCEMLuKFgxM9RtZPcl")); //channel IP : Port\\"ws://192.168.0.109:6060/$myid"
       channel?.stream.listen((message) {
-        print(message.toString());
+        print((message));
         setState(() {
-          if(message == "connected"){
+          var message1=json.decode(message);
+          if(message1["action"]== "onOpen"){
             connected = true;
+
             setState(() { });
             print("Connection establised.");
-          }else if(message == "send:success"){
+          }else if(message1["action"] == "agentReplyChat"){
             print("Message send success");
+
             setState(() {
               msgtext.text = "";
             });
@@ -69,6 +72,7 @@ class ChatPageState extends State<SocketDemo>{
         });
       },
         onDone: () {
+
           //if WebSocket is disconnected
           print("Web socket is closed");
           setState(() {
@@ -90,7 +94,17 @@ class ChatPageState extends State<SocketDemo>{
         msgtext.text = "";
         msglist.add(MessageData(msgtext: sendmsg, userid: myid, isme: true));
       });
-      channel?.sink.add(msg); //send message to reciever channel
+      var data={};
+      data["action"]= "agentReplyChat";
+      data["actionBy"]= 269;
+      data["actionType"] = 3;
+      data["attachment"]= {};
+      data["chatId"] ="86a0e2402a9811eca98f9a4bbcc22257";
+      data["contentType"]= "TEXT";
+      data["eId"] =103;
+      data["message"] ="hello2";
+        print(data.toString());
+      channel?.sink.add(data.toString()); //send message to reciever channel
     }else{
       channelconnect();
       print("Websocket is not connected.");

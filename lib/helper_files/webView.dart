@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -78,16 +79,16 @@ class WebViewExampleState extends State<WebViewEx> {
     );
   }
 
-
-
-    void _downloadFile(String url, String filename) async {
+  getPermission(String url, String filename) async {
+    if (await Permission.storage.request().isGranted) {
+      // Either the permission was already granted before or the user just granted it.
       var request = await httpClient.getUrl(Uri.parse(url));
       var response = await request.close();
       final folderName="twixor_demo";
       var bytes = await consolidateHttpClientResponseBytes(response);
       String dir = (await getApplicationDocumentsDirectory()).path;
       final path= Directory("storage/emulated/0/$folderName");
-     // File file = new File('$path/$filename');
+      // File file = new File('$path/$filename');
       //print(file);
       //await file.writeAsBytes(bytes);
       if ((await path.exists())){
@@ -102,6 +103,18 @@ class WebViewExampleState extends State<WebViewEx> {
         path.create();
 
       }
+    } else {
+// You can request multiple permissions at once.
+      Map<Permission, PermissionStatus> statuses = await [
+        Permission.storage,
+      ].request();
+      print(statuses[Permission.location]);
+    }
+  }
+
+    void _downloadFile(String url, String filename) async {
+      getPermission(url, filename);
+
       // print(dir);
       // File file = new File('$dir/$filename');
       // print(file);
