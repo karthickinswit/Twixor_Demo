@@ -3,13 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_offline/flutter_offline.dart';
+import 'package:twixor_demo/chatDetailPage.dart';
+import 'package:twixor_demo/models/chatMessageModel.dart';
 import 'conversationList.dart';
+import 'helper_files/Websocket.dart';
+import 'models/Attachmentmodel.dart';
 import 'models/chatUsersModel.dart';
 import 'API/apidata-service.dart';
+import 'package:connectivity/connectivity.dart';
 
+//var connectivityResult = (Connectivity().checkConnectivity());
 
-class profilePage extends StatefulWidget{
-
+class profilePage extends StatefulWidget {
   //File fileImg;
   //ChatDetailPage(this.imageUrl, this.name,this.msgindex);
   //fetchPost()
@@ -18,15 +23,15 @@ class profilePage extends StatefulWidget{
 
   //ChatDetailPageState(imageUrl);
 
-
-
   @override
-  _profilePage createState() =>_profilePage();
-
+  _profilePage createState() => _profilePage();
 }
 
-class _profilePage extends State<profilePage> with SingleTickerProviderStateMixin{
+class _profilePage extends State<profilePage>
+    with SingleTickerProviderStateMixin {
   List<ChatUsers> chatUsers = [];
+  // late ConnectivityResult _previousResult;
+  // late ConnectivityResult connectivityResult;
 
   late TabController _tabController;
 
@@ -41,14 +46,14 @@ class _profilePage extends State<profilePage> with SingleTickerProviderStateMixi
     );
   }
 
-
   @override
   initState() {
     super.initState();
-   // UsersList();
+    // UsersList();
+    // connectivityResult =        Connectivity().checkConnectivity() as ConnectivityResult;
+    // print(connectivityResult.toString());
     _tabController = TabController(vsync: this, length: 2);
     super.setState(() {});
-
   }
 
   // static List<ChatUsers> chatUsers = [
@@ -64,123 +69,154 @@ class _profilePage extends State<profilePage> with SingleTickerProviderStateMixi
 
   @override
   Widget TabsScreen() {
-      return DefaultTabController(
-        length: 2,
-        child: Scaffold(
-          appBar: AppBar(
-            toolbarHeight: 130,
-            elevation: 16.0,
-            backgroundColor: Colors.white,
-            foregroundColor: Colors.black,
-            flexibleSpace: MyCustomAppBar(),
-
-            bottom: PreferredSize(
-              preferredSize: Size.fromHeight(0.0),
-              child: TabBar(
-                indicatorColor: Colors.grey,
-                labelColor: Colors.black,
-                unselectedLabelColor: Colors.grey,
-controller: _tabController,
-                tabs: [
-                  Container(
-                    height: 30.0,
-                    //alignment: Tex,
-                    child: Tab(text: 'Active Chats'),
-                  ),
-                  new Container(
-                    height: 30.0,
-
-                    child: Tab(text: 'Closed Chats'),
-                  ),
-                  //   Tab( text: 'Active Chats'),
-                  //   Tab( text: 'Closed Chats')
-                ],
-              ),
-            ),
-          ),
-          endDrawer: Drawer(
-            elevation: 20.0,
-            child: Column(
-              children: <Widget>[
-                SizedBox(height: 80),
-                ListTile(
-                  title: new Text("Agent"),
+    channelconnect();
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        appBar: AppBar(
+          toolbarHeight: 130,
+          elevation: 16.0,
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black,
+          flexibleSpace: MyCustomAppBar(),
+          bottom: PreferredSize(
+            preferredSize: Size.fromHeight(0.0),
+            child: TabBar(
+              indicatorColor: Colors.grey,
+              labelColor: Colors.black,
+              unselectedLabelColor: Colors.grey,
+              controller: _tabController,
+              tabs: [
+                Container(
+                  height: 30.0,
+                  //alignment: Tex,
+                  child: Tab(text: 'Active Chats'),
                 ),
-                ListTile(
-                  title: new Text("Chat"),
-                  leading: new Icon(Icons.mail),
+                new Container(
+                  height: 30.0,
+                  child: Tab(text: 'Closed Chats'),
                 ),
-                Divider(
-                  height: 0.1,
-                ),
-                ListTile(
-                  title: new Text("Logout"),
-                  leading: new Icon(Icons.logout),
-                ),
+                //   Tab( text: 'Active Chats'),
+                //   Tab( text: 'Closed Chats')
               ],
             ),
           ),
-          body: TabBarView(
-
-            controller: _tabController,
-            children: [
-              FutureBuilder(builder: (context,snapshot) {
-                print("snapChat data -> ${snapshot.data.toString()}");
-                if(snapshot.hasData) {
-                  chatUsers = snapshot.data as List<ChatUsers>;
-                 print('receiver data -> $chatUsers');
-                  return ListView.builder(
-                    itemCount: chatUsers.length,
-                    shrinkWrap: true,
-                    // scrollDirection: Axis.horizontal,
-                    padding: EdgeInsets.only(top: 10),
-                    physics: ClampingScrollPhysics(),
-                    itemBuilder: (context, index) {
-                      return ConversationList(
-                        name: chatUsers[index].name,
-                        messageText: chatUsers[index].messageText,
-                        imageUrl: chatUsers[index].imageURL,
-                        time: chatUsers[index].time,
-                        isMessageRead: (index == 0 || index == 3)
-                            ? true
-                            : false,
-                        msgindex: index,
-                        messages:chatUsers[index].messages
-                      );
-                    },
-                  );
-                }
-                else return  Center(child: CircularProgressIndicator());
-              },future:getChatUserLists()),
-
-              ListView.builder(
-                itemCount: chatUsers.length,
-                shrinkWrap: true,
-                // scrollDirection: Axis.horizontal,
-                padding: EdgeInsets.only(top: 16),
-                physics: ClampingScrollPhysics(),
-                itemBuilder: (context, index) {
-                  if (chatUsers.length > 0) {
-                    return ConversationList(
-                      name: chatUsers[index].name,
-                      messageText: chatUsers[index].messageText,
-                      imageUrl: chatUsers[index].imageURL,
-                      time: chatUsers[index].time,
-                      isMessageRead: (index == 0 || index == 3) ? true : false,
-                      msgindex: index,
-                      messages: chatUsers[index].messages,
-                    );
-                  }
-                  return CircularProgressIndicator();
-                },
-              ) //ListViewHome()
-              //  ScreenA(), ScreenB()
+        ),
+        endDrawer: Drawer(
+          elevation: 20.0,
+          child: Column(
+            children: <Widget>[
+              SizedBox(height: 80),
+              ListTile(
+                title: new Text("Agent"),
+              ),
+              ListTile(
+                title: new Text("Chat"),
+                leading: new Icon(Icons.mail),
+              ),
+              Divider(
+                height: 0.1,
+              ),
+              ListTile(
+                title: new Text("Logout"),
+                leading: new Icon(Icons.logout),
+              ),
             ],
           ),
         ),
-      );
+        body: TabBarView(
+          controller: _tabController,
+          children: [
+            FutureBuilder(
+                builder: (context, snapshot) {
+                  print("snapChat data -> ${snapshot.data.toString()}");
+                  if (snapshot.hasData) {
+                    chatUsers = snapshot.data as List<ChatUsers>;
+                    print('receiver data -> $chatUsers');
+                    return ListView.builder(
+                      itemCount: chatUsers.length,
+                      shrinkWrap: true,
+                      // scrollDirection: Axis.horizontal,
+                      padding: EdgeInsets.only(top: 10),
+                      physics: ClampingScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        String? time = chatUsers[index].time;
+                        String? name = chatUsers[index].name;
+                        String? messageText = chatUsers[index].messageText;
+                        String? imageURL = chatUsers[index].imageURL;
+                        List<ChatMessage>? messages = chatUsers[index].messages;
+                        String? actionBy = chatUsers[index].actionBy;
+                        String? chatId = chatUsers[index].chatId;
+                        String? eId = chatUsers[index].eId;
 
+                        var a = DateTime.fromMillisecondsSinceEpoch(
+                                int.parse(time!),
+                                isUtc: true)
+                            .toString();
+                        return ConversationList(
+                          name: name!,
+                          messageText: messageText!,
+                          imageUrl: imageURL!,
+                          time: a.toString(),
+                          isMessageRead:
+                              (index == 0 || index == 3) ? true : false,
+                          msgindex: index,
+                          messages: messages!,
+                          actionBy: actionBy!,
+                          chatId: chatId!,
+                          eId: eId!,
+                          attachments: Attachment(isAttachment: false),
+                        );
+                      },
+                    );
+                  } else
+                    return Center(child: CircularProgressIndicator());
+                },
+                future: getChatUserLists()),
 
+            ListView.builder(
+              itemCount: chatUsers.length,
+
+              shrinkWrap: true,
+              // scrollDirection: Axis.horizontal,
+              padding: EdgeInsets.only(top: 16),
+              physics: ClampingScrollPhysics(),
+              itemBuilder: (context, index) {
+                String? time = chatUsers[index].time;
+                String? name = chatUsers[index].name;
+                String? messageText = chatUsers[index].messageText;
+                String? imageURL = chatUsers[index].imageURL;
+                List<ChatMessage>? messages = chatUsers[index].messages;
+                String? actionBy = chatUsers[index].actionBy;
+                String? chatId = chatUsers[index].chatId;
+                String? eId = chatUsers[index].eId;
+                if (chatUsers.length > 0) {
+                  var a = DateTime.fromMillisecondsSinceEpoch(int.parse(time!),
+                          isUtc: true)
+                      .toString();
+                  return ConversationList(
+                    name: name!,
+                    messageText: messageText!,
+                    imageUrl: imageURL!,
+                    time: a.toString(),
+                    isMessageRead: (index == 0 || index == 3) ? true : false,
+                    msgindex: index,
+                    messages: messages!,
+                    actionBy: actionBy!,
+                    chatId: chatId!,
+                    eId: eId!,
+                    attachments: Attachment(isAttachment: false),
+                  );
+                }
+                return CircularProgressIndicator();
+              },
+            ) //ListViewHome()
+            //  ScreenA(), ScreenB()
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -188,47 +224,37 @@ controller: _tabController,
     // TODO: implement createState
     throw UnimplementedError();
   }
-
-
-
 }
 
 class MyCustomAppBar extends StatelessWidget
     implements PreferredSizeWidget, NamedIcon {
-
- // final double height;
+  // final double height;
 
   //final bool connected = connectivity != ConnectivityResult.none;
 
-  const MyCustomAppBar({
-    Key? key
-  }) : super(key: key);
-
+  const MyCustomAppBar({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-
-
     return Column(
       children: [
-    SizedBox(
-               height: 20,),
+        SizedBox(
+          height: 20,
+        ),
         Container(
           color: Colors.white,
           width: 400,
           height: 100,
           child: Padding(
             padding: EdgeInsets.all(0),
-            child:
-            Container(
+            child: Container(
               child: AppBar(
-
                 automaticallyImplyLeading: false,
                 bottom: PreferredSize(
                     child: Container(
-                      // color: Colors.grey,
-                      // height: 0.0,
-                    ),
+                        // color: Colors.grey,
+                        // height: 0.0,
+                        ),
                     preferredSize: Size.fromHeight(1.0)),
                 backgroundColor: Colors.white,
                 foregroundColor: Colors.black,
@@ -241,18 +267,22 @@ class MyCustomAppBar extends StatelessWidget
                     textAlign: TextAlign.center),
                 actions: [
                   Row(
-
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Image.asset('asset/images/online.png', width: 20.0, height: 20.0,),
+                      Image.asset(
+                        'asset/images/online.png',
+                        width: 20.0,
+                        height: 20.0,
+                      ),
                       Text(
                         "Online",
                         textDirection: TextDirection.rtl,
                         textAlign: TextAlign.right,
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),),
-
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 15),
+                      ),
                     ],
                   ),
                   NamedIcon(
@@ -260,26 +290,19 @@ class MyCustomAppBar extends StatelessWidget
                     iconData: Icons.notifications,
                     notificationCount: 11,
                     onTap: () {},
-
                   ),
-              IconButton(
-                icon: Icon(
-                  Icons.menu,
-                  color: Colors.white,
-                ), onPressed: () {  },
-
-
+                  IconButton(
+                    icon: Icon(
+                      Icons.menu,
+                      color: Colors.white,
+                    ),
+                    onPressed: () {},
+                  ),
+                ],
               ),
-              ],
-              ),
-
             ),
-
           ),
-
         ),
-
-
       ],
     );
   }
@@ -307,50 +330,50 @@ class MyCustomAppBar extends StatelessWidget
   // TODO: implement notificationCount
   int get notificationCount => 6;
 }
+
 class NamedIcon extends StatelessWidget {
   final IconData iconData;
   final String text;
   final VoidCallback onTap;
   final int notificationCount;
-const NamedIcon({
-Key? key,
-required this.onTap,
-required this.text,
-required this.iconData,
-required this.notificationCount,
-}) : super(key: key);
+  const NamedIcon({
+    Key? key,
+    required this.onTap,
+    required this.text,
+    required this.iconData,
+    required this.notificationCount,
+  }) : super(key: key);
 
-@override
-Widget build(BuildContext context) {
-  return InkWell(
-    onTap: onTap,
-    child: Container(
-      width: 72,
-      padding: const EdgeInsets.symmetric(horizontal: 8),
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Icon(iconData),
-            ],
-          ),
-          Positioned(
-            top: 0,
-            left: 0,
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-              decoration:
-              BoxDecoration(shape: BoxShape.circle, color: Colors.red),
-              alignment: Alignment.center,
-              child: Text('$notificationCount'),
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        width: 72,
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Icon(iconData),
+              ],
             ),
-          ),
-
-        ],
+            Positioned(
+              top: 0,
+              left: 0,
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration:
+                    BoxDecoration(shape: BoxShape.circle, color: Colors.red),
+                alignment: Alignment.center,
+                child: Text('$notificationCount'),
+              ),
+            ),
+          ],
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 }

@@ -1,4 +1,3 @@
-
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -9,19 +8,18 @@ import 'package:permission_handler/permission_handler.dart';
 
 import 'ChatPage.dart';
 import 'Chat2Page.dart';
+import 'helper_files/autoKeyboard.dart';
 import 'helper_files/loader.dart';
+
 void main() {
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   @override
-
-  initState()
-  {
-   // getPermission();
+  initState() {
+    // getPermission();
   }
-
 
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -29,6 +27,7 @@ class MyApp extends StatelessWidget {
       home: LoginDemo(),
     );
   }
+
   void checkServiceStatus(
       BuildContext context, PermissionWithService permission) async {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -38,15 +37,11 @@ class MyApp extends StatelessWidget {
 
   Future<void> requestPermission(Permission permission) async {
     final status = await permission.request();
-
-
-
   }
 }
 
-
 class LoginDemo extends StatefulWidget {
-  late bool isLoading ;
+  late bool isLoading;
   @override
   _LoginDemoState createState() => _LoginDemoState();
 }
@@ -91,7 +86,6 @@ class _LoginDemoState extends State<LoginDemo> {
                   left: 15.0, right: 15.0, top: 15, bottom: 0),
               //padding: EdgeInsets.symmetric(horizontal: 15),
               child: TextField(
-
                 obscureText: true,
                 decoration: InputDecoration(
                     border: OutlineInputBorder(),
@@ -100,7 +94,7 @@ class _LoginDemoState extends State<LoginDemo> {
               ),
             ),
             FlatButton(
-              onPressed: (){
+              onPressed: () {
                 //TODO FORGOT PASSWORD SCREEN GOES HERE
               },
               child: Text(
@@ -115,21 +109,19 @@ class _LoginDemoState extends State<LoginDemo> {
                   color: Colors.blue, borderRadius: BorderRadius.circular(20)),
               child: FlatButton(
                 onPressed: () {
-
                   //LoaderDialog.showLoadingDialog(context, _LoaderDialog);
-                 // sleep(const Duration(seconds: 5));
+                  // sleep(const Duration(seconds: 5));
 
                   //Navigator.of(_LoaderDialog.currentContext,rootNavigator: true).pop();
 
-                  Navigator.push(
-                      context, MaterialPageRoute(builder: (_) => profilePage()));
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => profilePage()));
                 },
                 child: Text(
                   'Login',
                   style: TextStyle(color: Colors.white, fontSize: 25),
                 ),
               ),
-
             ),
             SizedBox(
               height: 130,
@@ -141,21 +133,19 @@ class _LoginDemoState extends State<LoginDemo> {
                   color: Colors.blue, borderRadius: BorderRadius.circular(20)),
               child: FlatButton(
                 onPressed: () {
-
                   //LoaderDialog.showLoadingDialog(context, _LoaderDialog);
                   // sleep(const Duration(seconds: 5));
 
                   //Navigator.of(_LoaderDialog.currentContext,rootNavigator: true).pop();
 
                   Navigator.push(
-                      context, MaterialPageRoute(builder: (_) => SocketDemo()));
+                      context, MaterialPageRoute(builder: (_) => ChatUI()));
                 },
                 child: Text(
                   'Test Page',
                   style: TextStyle(color: Colors.white, fontSize: 25),
                 ),
               ),
-
             ),
             Text('New User? Create Account')
           ],
