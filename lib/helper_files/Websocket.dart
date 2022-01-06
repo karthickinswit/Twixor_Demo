@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:twixor_demo/API/apidata-service.dart';
+import 'package:twixor_demo/models/chatMessageModel.dart';
 import 'package:web_socket_channel/io.dart';
+
+import '../chatDetailPage.dart';
 
 class SocketDemo extends StatefulWidget {
   @override
@@ -23,6 +26,7 @@ class ChatPageState extends State<SocketDemo> {
   String auth = "chatapphdfgjd34534hjdfk"; //auth key
 
   List<MessageData> msglist = [];
+  List<ChatMessage> messages = [];
 
   TextEditingController msgtext = TextEditingController();
 
@@ -95,7 +99,7 @@ class ChatPageState extends State<SocketDemo> {
     }
   }
 
-  Future<void> sendmsg(String sendmsg, String id) async {
+  Future<void> sendmessage(String sendmsg, String actionId, String id) async {
     print('connected${connected}');
     if (connected == true) {
       String msg =
@@ -213,8 +217,7 @@ class ChatPageState extends State<SocketDemo> {
                             child: Icon(Icons.send),
                             onPressed: () {
                               if (msgtext.text != "") {
-                                sendmsg(msgtext.text,
-                                    recieverid); //send message with webspcket
+                                //send message with webspcket
                               } else {
                                 print("Enter message");
                               }
@@ -253,46 +256,41 @@ channelconnect() {
       "Content-type": "application/json",
       "authentication-token": authToken
     };
+
     channel = IOWebSocketChannel.connect("wss://aim.twixor.com/actions",
-        headers:
-            mainheader); //channel IP : Port\\"ws://192.168.0.109:6060/$myid"
-    channel.stream.listen(
-      (message) {
-        print((message));
-        var message1 = json.decode(message);
-        if (message1["action"] == "onOpen") {
-          connected = true;
+        headers: mainheader);
 
-          print("Connection establised.");
-        } else if (message1["action"] == "agentReplyChat") {
-          print("Message sent");
-        } else if (message1 == "customerStartChat") {
-          print("Customer Start Chat");
-        } else if (message1 == "waitingInviteAccept") {
-          print("waitingInviteAccept");
+    //channel IP : Port\\"ws://192.168.0.109:6060/$myid"
+    // channel.stream.listen(
+    // (message) {
+    //   print((message.toString()));
+    //   var message1 = json.decode(message);
+    //   if (message1["action"] == "onOpen") {
+    //     connected = true;
 
-          // message = message.replaceAll(RegExp("'"), '"');
-          // var jsondata = json.decode(message);
-        } else if (message1 == "waitingTransferAccept") {
-          print("waitingTransferAccept");
-        }
-      },
-      onDone: () {
-        //if WebSocket is disconnected
-        print("Web socket is closed");
-      },
-      onError: (error) {
-        print(error.toString());
-      },
-    );
+    //     print("Connection establised.");
+    //   } else if (message1["action"] == "agentReplyChat") {
+    //     print("Message sent");
+    //   } else if (message1 == "customerStartChat") {
+    //     print("Customer Start Chat");
+    //   } else if (message1 == "waitingInviteAccept") {
+    //     print("waitingInviteAccept");
+    //   } else if (message1 == "waitingTransferAccept") {
+    //     print("waitingTransferAccept");
+    //   }
+    // },
+    // onDone: () {
+    //if WebSocket is disconnected
+    // print("Web socket is closed");
+
   } catch (_) {
     print("error on connecting to websocket.");
   }
   // return connected;
 }
 
-Future<void> sendmsg(String sendmsg, String actionBy, String chatId, String eId,
-    bool isAttachment, Attachement attachement) async {
+Future<void> sendmessage(String sendmsg, String actionBy, String chatId,
+    String eId, bool isAttachment, Attachement attachement) async {
   IOWebSocketChannel? channel;
   bool connected = false;
 
