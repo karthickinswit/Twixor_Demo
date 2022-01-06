@@ -1,15 +1,13 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:twixor_demo/Chatmain.dart';
+import 'package:twixor_demo/removedItems/Chatmain.dart';
 import 'API/apidata-service.dart';
 import 'helper_files/Websocket.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import 'ChatPage.dart';
+import 'removedItems/ChatPage.dart';
 import 'Chat2Page.dart';
-import 'helper_files/autoKeyboard.dart';
-import 'helper_files/loader.dart';
 
 void main() {
   runApp(MyApp());
@@ -17,9 +15,7 @@ void main() {
 
 class MyApp extends StatelessWidget {
   @override
-  initState() {
-    // getPermission();
-  }
+  initState() {}
 
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -47,7 +43,6 @@ class LoginDemo extends StatefulWidget {
 }
 
 class _LoginDemoState extends State<LoginDemo> {
-  final GlobalKey<State> _LoaderDialog = new GlobalKey<State>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -138,8 +133,8 @@ class _LoginDemoState extends State<LoginDemo> {
 
                   //Navigator.of(_LoaderDialog.currentContext,rootNavigator: true).pop();
 
-                  Navigator.push(
-                      context, MaterialPageRoute(builder: (_) => ChatUI()));
+                  // Navigator.push(
+                  //     context, MaterialPageRoute(builder: (_) => ChatUI()));
                 },
                 child: Text(
                   'Test Page',

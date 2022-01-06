@@ -58,38 +58,39 @@ class AttachmentsPage extends StatelessWidget {
             body: TabBarView(
               children: [
                 FutureBuilder(
-                    builder: (context, snapshot) {
-                      print("Attachment data -> ${snapshot.data.toString()}");
-                      if (snapshot.hasData) {
-                        var messageList = snapshot.data as List<Attachment>;
-                        print('receiver data -> ${messageList.length}');
-                        return ListView.builder(
-                          itemCount: messageList.length,
-                          shrinkWrap: true,
-                          // scrollDirection: Axis.horizontal,
-                          padding: EdgeInsets.only(top: 10),
-                          physics: ClampingScrollPhysics(),
-                          itemBuilder: (context, index) {
-                            return ListTile(
-                                trailing: Text(
-                                  messageList[index].type.toString(),
-                                ),
-                                title: Text("${messageList[index].desc}"),
-                                onTap: () {
-                                  jsonData;
+                  builder: (context, snapshot) {
+                    print("Attachment data -> ${snapshot.data.toString()}");
+                    if (snapshot.hasData) {
+                      var messageList = snapshot.data as List<Attachment>;
+                      print('receiver data -> ${messageList.length}');
+                      return ListView.builder(
+                        itemCount: messageList.length,
+                        shrinkWrap: true,
+                        // scrollDirection: Axis.horizontal,
+                        padding: EdgeInsets.only(top: 10),
+                        physics: ClampingScrollPhysics(),
+                        itemBuilder: (context, index) {
+                          return ListTile(
+                              trailing: Text(
+                                messageList[index].type.toString(),
+                              ),
+                              title: Text("${messageList[index].desc}"),
+                              onTap: () {
+                                jsonData;
 
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => ChatDetailPage(
-                                              jsonData, messageList[index])));
-                                });
-                          },
-                        );
-                      } else
-                        return Center(child: CircularProgressIndicator());
-                    },
-                    future: getAttachments(mediaType)),
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => ChatDetailPage(
+                                            jsonData, messageList[index])));
+                              });
+                        },
+                      );
+                    } else
+                      return Center(child: CircularProgressIndicator());
+                  },
+                  //future: getAttachments(mediaType)
+                ),
                 FutureBuilder(
                   builder: (context, snapshot) {
                     print("Attachment data -> ${snapshot.data.toString()}");

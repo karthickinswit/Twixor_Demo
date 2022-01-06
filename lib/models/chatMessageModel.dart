@@ -7,8 +7,9 @@ class ChatMessage {
   String? contentType;
   String? url;
   String? actionBy;
-  String? chatId;
-  String? eId;
+
+  String? actionType;
+  String? actedOn;
   ChatMessage(
       {required this.messageContent,
       required this.messageType,
@@ -16,18 +17,35 @@ class ChatMessage {
       required this.contentType,
       required this.url,
       required this.actionBy,
-      required this.chatId,
-      required this.eId});
+      required this.actionType,
+      this.actedOn});
 
-  ChatMessage.fromJson(Map<String, dynamic> json) {
-    messageContent = json['messageContent'];
-    messageType = json['messageType'];
-    isUrl = json['isUrl'];
-    contentType = json['contentType'];
-    url = json['url'];
-    actionBy = json['actionBy'];
-    chatId = json['chatId'];
-    eId = json['eId'];
+  ChatMessage.fromAPItoJson(Map<String, dynamic> json) {
+    messageContent = json["message"] != null ? json["message"] as String : "";
+    messageType = json["status"] != null
+        ? json["status"] == 0
+            ? "sender"
+            : "receiver" as String
+        : "";
+    isUrl = json['isUrl'] == null ? false : true;
+    contentType =
+        json['contentType'] != null ? json["contentType"] as String : "";
+    url = json['url'] != null ? json['url'] : "" as String;
+
+    actionType =
+        json["actionType"] != null ? json['actionType'].toString() : "";
+    actedOn = json["actedOn"] != null ? json['actedOn'].toString() : "";
+  }
+  ChatMessage.fromLocaltoJson(Map<String, dynamic> json) {
+    ///eId = json['eId'] as String;
+    messageContent = json["messageContent"];
+    messageType = json["messageType"];
+    isUrl = json["isUrl"];
+    contentType = json["contentType"];
+    url = json["url"];
+    actionBy = json["actionBy"];
+    actionType = json["actionType"];
+    actedOn = json["actedOn"];
   }
 
   Map<String, dynamic> toJson() {
@@ -38,8 +56,8 @@ class ChatMessage {
     data['contentType'] = this.contentType;
     data['url'] = this.url;
     data['actionBy'] = this.actionBy;
-    data['chatId'] = this.chatId;
-    data['eId'] = this.eId;
+    data["actionType"] = this.actionType;
+    data["actedOn"] = this.actedOn;
     return data;
   }
 }

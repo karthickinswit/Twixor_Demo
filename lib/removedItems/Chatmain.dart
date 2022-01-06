@@ -1,4 +1,4 @@
-import 'helper_files/Websocket.dart';
+import '../helper_files/Websocket.dart';
 import 'package:flutter/material.dart';
 
 void main() {

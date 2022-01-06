@@ -4,77 +4,71 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_offline/flutter_offline.dart';
 import 'package:flutter/widgets.dart';
-import 'HomePage.dart';
+import '../HomePage.dart';
 import 'package:connectivity/connectivity.dart';
 
 class ChatPage extends StatelessWidget {
-
   ConnectivityResult? connectivity;
   @override
   Widget build(BuildContext context) {
-    final bool connected = connectivity!= ConnectivityResult.none;
-   // print(connected);
+    final bool connected = connectivity != ConnectivityResult.none;
+    // print(connected);
     return SafeArea(
       child: Scaffold(
-          appBar:
-          AppBar(
-            centerTitle: true,
-            title: MyCustomAppBar(
-              height: 100,
-              isOnline:connected ? "Online" : "Offline",
-              
-            ),
+        appBar: AppBar(
+          centerTitle: true,
+          title: MyCustomAppBar(
+            height: 100,
+            isOnline: connected ? "Online" : "Offline",
           ),
-
-          endDrawer: Drawer(
-            elevation: 16.0,
-            child: Column(
-              children: <Widget>[
-                UserAccountsDrawerHeader(
-                  accountName: Text("xyz"),
-                  accountEmail: Text("xyz@gmail.com"),
-                  currentAccountPicture: CircleAvatar(
+        ),
+        endDrawer: Drawer(
+          elevation: 16.0,
+          child: Column(
+            children: <Widget>[
+              UserAccountsDrawerHeader(
+                accountName: Text("xyz"),
+                accountEmail: Text("xyz@gmail.com"),
+                currentAccountPicture: CircleAvatar(
+                  backgroundColor: Colors.white,
+                  child: Text("xyz"),
+                ),
+                otherAccountsPictures: <Widget>[
+                  CircleAvatar(
                     backgroundColor: Colors.white,
-                    child: Text("xyz"),
-                  ),
-                  otherAccountsPictures: <Widget>[
-                    CircleAvatar(
-                      backgroundColor: Colors.white,
-                      child: Text("abc"),
-                    )
-                  ],
-                ),
-                ListTile(
-                  title: new Text("All Inboxes"),
-                  leading: new Icon(Icons.mail),
-                ),
-                Divider(
-                  height: 0.1,
-                ),
-                ListTile(
-                  title: new Text("Primary"),
-                  leading: new Icon(Icons.inbox),
-                ),
-                ListTile(
-                  title: new Text("Social"),
-                  leading: new Icon(Icons.people),
-                ),
-                ListTile(
-                  title: new Text("Promotions"),
-                  leading: new Icon(Icons.local_offer),
-                )
-              ],
-            ),
+                    child: Text("abc"),
+                  )
+                ],
+              ),
+              ListTile(
+                title: new Text("All Inboxes"),
+                leading: new Icon(Icons.mail),
+              ),
+              Divider(
+                height: 0.1,
+              ),
+              ListTile(
+                title: new Text("Primary"),
+                leading: new Icon(Icons.inbox),
+              ),
+              ListTile(
+                title: new Text("Social"),
+                leading: new Icon(Icons.people),
+              ),
+              ListTile(
+                title: new Text("Promotions"),
+                leading: new Icon(Icons.local_offer),
+              )
+            ],
           ),
-
-    ),
+        ),
+      ),
     );
   }
 }
 
 class MyCustomAppBar extends StatelessWidget
     implements PreferredSizeWidget, NamedIcon {
-
   final double height;
   final String isOnline;
   // Future<String> check() async {
@@ -89,8 +83,8 @@ class MyCustomAppBar extends StatelessWidget
 
   const MyCustomAppBar({
     Key? key,
-    required this.height, required this.isOnline,
-
+    required this.height,
+    required this.isOnline,
   }) : super(key: key);
 
   @override
@@ -102,67 +96,58 @@ class MyCustomAppBar extends StatelessWidget
           width: 800,
           child: Padding(
             padding: EdgeInsets.all(0),
-            child:
-            Container(
-            child: AppBar(
-              backgroundColor: Colors.white,
-              foregroundColor: Colors.black,
-              leading: Image.asset('asset/images/chatlogo.png'),
-              title: Text('Chats',
-                  style: TextStyle(
-                      fontFamily: 'RobotoMono',
-                      fontWeight: FontWeight.w300,
-                      fontSize: 20.0),
-                  textAlign: TextAlign.center),
-              actions: [
-
-                Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-
-
-               Image.asset('asset/images/online.png', width: 20.0, height: 20.0,),
-                            Text(
-                              //'check().then((intenet) { if (intenet != null && intenet) { return "Online";}return "Offline"});',
-                              "${isOnline}",
-                              textDirection: TextDirection.rtl,
-                              textAlign: TextAlign.right,
-                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),),
-
-              ],
-            ),
-
-
-
-                NamedIcon(
-                  text: '',
-                  iconData: Icons.notifications,
-                  notificationCount: 11,
-                  onTap: () {},
-                ),
-                IconButton(
-                  icon: Icon(
-                    Icons.menu,
+            child: Container(
+              child: AppBar(
+                backgroundColor: Colors.white,
+                foregroundColor: Colors.black,
+                leading: Image.asset('asset/images/chatlogo.png'),
+                title: Text('Chats',
+                    style: TextStyle(
+                        fontFamily: 'RobotoMono',
+                        fontWeight: FontWeight.w300,
+                        fontSize: 20.0),
+                    textAlign: TextAlign.center),
+                actions: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Image.asset(
+                        'asset/images/online.png',
+                        width: 20.0,
+                        height: 20.0,
+                      ),
+                      Text(
+                        //'check().then((intenet) { if (intenet != null && intenet) { return "Online";}return "Offline"});',
+                        "${isOnline}",
+                        textDirection: TextDirection.rtl,
+                        textAlign: TextAlign.right,
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 15),
+                      ),
+                    ],
                   ),
-                  onPressed: () {
-                    //endDrawer;
-                  },
-                ),
-                SizedBox(height: 50),
-               
-
-
-              ],
+                  NamedIcon(
+                    text: '',
+                    iconData: Icons.notifications,
+                    notificationCount: 11,
+                    onTap: () {},
+                  ),
+                  IconButton(
+                    icon: Icon(
+                      Icons.menu,
+                    ),
+                    onPressed: () {
+                      //endDrawer;
+                    },
+                  ),
+                  SizedBox(height: 50),
+                ],
+              ),
             ),
           ),
-
-          ),
-
         ),
-
-
       ],
     );
   }
@@ -190,8 +175,6 @@ class MyCustomAppBar extends StatelessWidget
   // TODO: implement notificationCount
   int get notificationCount => 6;
 }
-
-
 
 class NamedIcon extends StatelessWidget {
   final IconData iconData;
@@ -234,7 +217,6 @@ class NamedIcon extends StatelessWidget {
                 child: Text('$notificationCount'),
               ),
             ),
-
           ],
         ),
       ),

@@ -75,11 +75,11 @@ class _profilePage extends State<profilePage>
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
-          toolbarHeight: 130,
-          elevation: 16.0,
+          toolbarHeight: 100,
+          elevation: 1.0,
           backgroundColor: Colors.white,
           foregroundColor: Colors.black,
-          flexibleSpace: MyCustomAppBar(),
+          flexibleSpace: MyCustomeHeader(),
           bottom: PreferredSize(
             preferredSize: Size.fromHeight(0.0),
             child: TabBar(
@@ -89,12 +89,12 @@ class _profilePage extends State<profilePage>
               controller: _tabController,
               tabs: [
                 Container(
-                  height: 30.0,
+                  height: 40.0,
                   //alignment: Tex,
                   child: Tab(text: 'Active Chats'),
                 ),
                 new Container(
-                  height: 30.0,
+                  height: 40.0,
                   child: Tab(text: 'Closed Chats'),
                 ),
                 //   Tab( text: 'Active Chats'),
@@ -132,7 +132,8 @@ class _profilePage extends State<profilePage>
                 builder: (context, snapshot) {
                   print("snapChat data -> ${snapshot.data.toString()}");
                   if (snapshot.hasData) {
-                    chatUsers = snapshot.data as List<ChatUsers>;
+                    List<ChatUsers> chatUsers =
+                        snapshot.data as List<ChatUsers>;
                     print('receiver data -> $chatUsers');
                     return ListView.builder(
                       itemCount: chatUsers.length,
@@ -167,6 +168,7 @@ class _profilePage extends State<profilePage>
                           chatId: chatId!,
                           eId: eId!,
                           attachments: Attachment(isAttachment: false),
+                          jsonData: chatUsers[index],
                         );
                       },
                     );
@@ -207,6 +209,7 @@ class _profilePage extends State<profilePage>
                     chatId: chatId!,
                     eId: eId!,
                     attachments: Attachment(isAttachment: false),
+                    jsonData: chatUsers[index],
                   );
                 }
                 return CircularProgressIndicator();
@@ -218,22 +221,83 @@ class _profilePage extends State<profilePage>
       ),
     );
   }
+}
 
-  @override
-  State<StatefulWidget> createState() {
-    // TODO: implement createState
-    throw UnimplementedError();
-  }
+Widget MyCustomeHeader() {
+  return Container(
+    padding: EdgeInsets.only(top: 10),
+    child: AppBar(
+      automaticallyImplyLeading: false,
+      bottom: PreferredSize(
+          child: Container(
+              // color: Colors.grey,
+              // height: 0.0,
+              ),
+          preferredSize: Size.fromHeight(10.0)),
+      backgroundColor: Colors.white,
+      foregroundColor: Colors.black,
+      actions: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Image.asset('asset/images/chatlogo.png'),
+                  Text('Chats',
+                      style: TextStyle(
+                          fontFamily: 'RobotoMono',
+                          fontWeight: FontWeight.normal,
+                          fontSize: 30.0),
+                      textAlign: TextAlign.center),
+                ]),
+            Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                //mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                  Image.asset(
+                    'asset/images/online.png',
+                    width: 20.0,
+                    height: 20.0,
+                  ),
+                  Text(
+                    "Online",
+                    textDirection: TextDirection.rtl,
+                    textAlign: TextAlign.right,
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                  ),
+                ]),
+            SizedBox(
+              width: 80,
+            ),
+          ],
+        ),
+        NamedIcon(
+          text: '',
+          iconData: Icons.notifications,
+          notificationCount: 11,
+          onTap: () {},
+        ),
+        IconButton(
+          icon: Icon(
+            Icons.menu,
+            color: Colors.white,
+          ),
+          onPressed: () {},
+        ),
+      ],
+    ),
+  );
 }
 
 class MyCustomAppBar extends StatelessWidget
     implements PreferredSizeWidget, NamedIcon {
-  // final double height;
-
-  //final bool connected = connectivity != ConnectivityResult.none;
-
   const MyCustomAppBar({Key? key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -266,24 +330,28 @@ class MyCustomAppBar extends StatelessWidget
                         fontSize: 20.0),
                     textAlign: TextAlign.center),
                 actions: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Image.asset(
-                        'asset/images/online.png',
-                        width: 20.0,
-                        height: 20.0,
-                      ),
-                      Text(
-                        "Online",
-                        textDirection: TextDirection.rtl,
-                        textAlign: TextAlign.right,
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 15),
-                      ),
-                    ],
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Positioned(
+                    top: 85,
+                    left: 20,
+                    child: Image.asset(
+                      'asset/images/online.png',
+                      width: 10.0,
+                      height: 10.0,
+                    ),
+                  ),
+                  Positioned(
+                    top: 35,
+                    left: 3,
+                    child: Text(
+                      "Online",
+                      textDirection: TextDirection.rtl,
+                      textAlign: TextAlign.right,
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 10),
+                    ),
                   ),
                   NamedIcon(
                     text: '',
@@ -357,12 +425,16 @@ class NamedIcon extends StatelessWidget {
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Icon(iconData),
+                Icon(
+                  iconData,
+                  size: 30,
+                  color: Colors.grey,
+                ),
               ],
             ),
             Positioned(
-              top: 0,
-              left: 0,
+              top: 25,
+              left: 3,
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration:

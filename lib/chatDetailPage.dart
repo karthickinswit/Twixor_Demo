@@ -55,6 +55,7 @@ class _ChatDetailPageState extends State<ChatDetailPage>
   String? eId;
   String _url = '';
   String jsonData;
+  ChatUsers? userdata;
   Attachment attachments;
 
   var objFile = null;
@@ -86,6 +87,7 @@ class _ChatDetailPageState extends State<ChatDetailPage>
   String? preview;
 
   final ScrollController _controller = ScrollController();
+
   final TextEditingController msgController = TextEditingController();
 
   _onUrlChanged(String updatedUrl) {
@@ -108,15 +110,19 @@ class _ChatDetailPageState extends State<ChatDetailPage>
   initState() {
     super.initState();
     setState(() {
-      var userdata =
-          ChatUsers.fromJson(json.decode(jsonData)); //json.decode(jsonData);
-      this.imageUrl = userdata.imageURL;
-      this.name = userdata.name;
-      this.msgindex = userdata.msgindex;
-      this.messages = userdata.messages;
-      this.actionBy = userdata.actionBy;
-      this.chatId = userdata.chatId;
-      this.eId = userdata.eId;
+      userdata = ChatUsers.fromJson1(jsonDecode(jsonData));
+      print(userdata.toString());
+      this.imageUrl = userdata!.imageURL;
+      this.name = userdata!.name;
+      this.msgindex = userdata!.msgindex;
+      this.messages = userdata!.messages;
+      //var messages=
+      // this.messages =
+      //     ChatMessage.fromJson(userdata.messages) as List<ChatMessage>?;
+      this.actionBy = userdata!.actionBy;
+
+      this.chatId = userdata!.chatId;
+      this.eId = userdata!.eId;
     });
     WidgetsBinding.instance?.addObserver(this);
     super.setState(() {});
@@ -142,24 +148,25 @@ class _ChatDetailPageState extends State<ChatDetailPage>
       addSemanticIndexes: true,
       padding: EdgeInsets.only(bottom: 60),
       itemBuilder: (context, index) {
-        print(messages![0].isUrl);
+        print(messages![index].actionType);
+
         return Column(
           // alignment: (messages![index].messageType == "receiver"
           //     ? Alignment.topLeft
           //     : Alignment.topRight),
           children: <Widget>[
-            Container(
-              height: 30,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: (messages![index].messageType == "receiver"
-                    ? Colors.grey.shade200
-                    : Colors.blue[200]),
-              ),
-              padding:
-                  const EdgeInsets.only(left: 16, right: 16, top: 5, bottom: 5),
-              child: Text("Date"),
-            ),
+            messages![index].actionType != "3"
+                ? Container(
+                    height: 30,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: (Colors.blue[200]),
+                    ),
+                    padding: const EdgeInsets.only(
+                        left: 16, right: 16, top: 5, bottom: 5),
+                    child: Text("Date"),
+                  )
+                : Container(),
             Container(
               padding:
                   const EdgeInsets.only(left: 16, right: 16, top: 5, bottom: 5),
@@ -173,7 +180,7 @@ class _ChatDetailPageState extends State<ChatDetailPage>
                     borderRadius: BorderRadius.circular(10),
                     color: (messages![index].messageType == "receiver"
                         ? Colors.grey.shade200
-                        : Colors.blue[200]),
+                        : Colors.blue[50]),
                   ),
                   padding: EdgeInsets.all(14),
                   child: CheckType(index, messages![index].url),
@@ -338,16 +345,16 @@ class _ChatDetailPageState extends State<ChatDetailPage>
           print(msgController.text);
           if (msgController.text.isNotEmpty) {
             messages!.add(new ChatMessage(
-                messageContent: msgController.text,
-                messageType: "sender",
-                isUrl: Uri.parse(msgController.text).isAbsolute,
-                contentType: "text",
-                url: '',
-                actionBy: actionBy!,
-                chatId: chatId!,
-                eId: eId!));
+              messageContent: msgController.text,
+              messageType: "sender",
+              isUrl: Uri.parse(msgController.text).isAbsolute,
+              contentType: "text",
+              url: '',
+              actionType: "3",
+              actionBy: actionBy!,
+            ));
 
-            sendmsg(msgController.text, actionBy!, chatId!, eId!, false,
+            sendmessage(msgController.text, actionBy!, chatId!, eId!, false,
                 Attachement("", "docType", "docFileUrl"));
             print(messages![messages!.length - 1].isUrl);
             setState(() {
@@ -396,14 +403,14 @@ class _ChatDetailPageState extends State<ChatDetailPage>
             MaterialButton(
               onPressed: () {
                 messages!.add(new ChatMessage(
-                    messageContent: content.toString(),
-                    messageType: "sender",
-                    isUrl: Uri.parse(msgController.text).isAbsolute,
-                    contentType: "img",
-                    url: content.toString(),
-                    actionBy: actionBy!,
-                    chatId: chatId!,
-                    eId: eId!));
+                  messageContent: content.toString(),
+                  messageType: "sender",
+                  isUrl: Uri.parse(msgController.text).isAbsolute,
+                  contentType: "img",
+                  url: content.toString(),
+                  actionType: "3",
+                  actionBy: actionBy!,
+                ));
                 print(messages![messages!.length - 1].isUrl);
                 setState(() {});
               },
@@ -453,14 +460,14 @@ class _ChatDetailPageState extends State<ChatDetailPage>
             MaterialButton(
               onPressed: () {
                 messages!.add(new ChatMessage(
-                    messageContent: content.toString(),
-                    messageType: "sender",
-                    isUrl: Uri.parse(msgController.text).isAbsolute,
-                    contentType: "img",
-                    url: content.toString(),
-                    actionBy: actionBy!,
-                    chatId: chatId!,
-                    eId: eId!));
+                  messageContent: content.toString(),
+                  messageType: "sender",
+                  isUrl: Uri.parse(msgController.text).isAbsolute,
+                  contentType: "img",
+                  url: content.toString(),
+                  actionType: "3",
+                  actionBy: actionBy!,
+                ));
                 print(messages![messages!.length - 1].isUrl);
                 setState(() {});
               },
@@ -675,14 +682,14 @@ class _ChatDetailPageState extends State<ChatDetailPage>
           if (sendFileType == "jpg") {
             print(objFile.path);
             messages!.add(new ChatMessage(
-                messageContent: objFile.path.toString(),
-                messageType: "sender",
-                isUrl: true,
-                contentType: sendFileType,
-                url: objFile.path.toString(),
-                actionBy: actionBy!,
-                chatId: chatId!,
-                eId: eId!));
+              messageContent: objFile.path.toString(),
+              messageType: "sender",
+              isUrl: true,
+              contentType: sendFileType,
+              url: objFile.path.toString(),
+              actionType: "3",
+              actionBy: actionBy!,
+            ));
           }
         } else {
           await Navigator.push(
@@ -784,14 +791,14 @@ class _ChatDetailPageState extends State<ChatDetailPage>
           MaterialButton(
             onPressed: () {
               messages!.add(new ChatMessage(
-                  messageContent: content.toString(),
-                  messageType: "sender",
-                  isUrl: Uri.parse(msgController.text).isAbsolute,
-                  contentType: "img",
-                  url: content.toString(),
-                  actionBy: actionBy!,
-                  chatId: chatId!,
-                  eId: eId!));
+                messageContent: content.toString(),
+                messageType: "sender",
+                isUrl: Uri.parse(msgController.text).isAbsolute,
+                contentType: "img",
+                url: content.toString(),
+                actionType: "3",
+                actionBy: actionBy!,
+              ));
               print(messages![messages!.length - 1].isUrl);
               setState(() {});
             },
@@ -845,7 +852,7 @@ class _ChatDetailPageState extends State<ChatDetailPage>
         ]),
         Container(
           margin: const EdgeInsets.only(top: 5.0),
-          child: Text("last seen"),
+          child: Text(messages![index].actedOn.toString()),
         ),
       ],
     );
@@ -890,14 +897,6 @@ class _ChatDetailPageState extends State<ChatDetailPage>
         style: TextStyle(fontSize: 15),
       ),
     );
-  }
-
-  fetchPost() async {
-    await getChats().then((value) {
-      this.messages = value;
-    });
-    // RestDemo obj1=new RestDemo();
-    //.then((value) => value) as List<ChatMessage>;
   }
 
   @override

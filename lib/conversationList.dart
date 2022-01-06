@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:twixor_demo/models/chatMessageModel.dart';
+import 'package:twixor_demo/models/chatUsersModel.dart';
 import 'chatDetailPage.dart';
 import 'models/Attachmentmodel.dart';
 
@@ -17,6 +18,7 @@ class ConversationList extends StatefulWidget {
   String eId;
   List<ChatMessage> messages;
   Attachment attachments;
+  ChatUsers jsonData;
 
   ConversationList(
       {required this.name,
@@ -29,7 +31,10 @@ class ConversationList extends StatefulWidget {
       required this.actionBy,
       required this.chatId,
       required this.eId,
-      required this.attachments});
+      required this.attachments,
+      required this.jsonData});
+
+  setState() {}
   @override
   _ConversationListState createState() => _ConversationListState();
 }
@@ -44,23 +49,14 @@ class _ConversationListState extends State<ConversationList> {
         var imageUrl = widget.imageUrl;
         print("conversationPage");
         print(widget.msgindex);
-        String jsonData;
-        jsonData = jsonEncode({
-          "imageUrl": widget.imageUrl,
-          "name": widget.name,
-          "msgindex": widget.msgindex,
-          "imageFile": "",
-          "messages": widget.messages,
-          "actionBy": widget.actionBy,
-          "chatId": widget.chatId,
-          "eId": widget.eId
-        });
+        ChatUsers? userData;
+        String userDetails = jsonEncode(widget.jsonData);
 
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) =>
-                    ChatDetailPage(jsonData, Attachment(isAttachment: false))));
+                builder: (context) => ChatDetailPage(
+                    userDetails, Attachment(isAttachment: false))));
       },
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),

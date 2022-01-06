@@ -28,38 +28,58 @@ class ChatUsers {
       required this.eId});
 
   ChatUsers.fromJson(Map<String, dynamic> json) {
-    imageURL = json['imageUrl'];
-    name = json['name'];
-    // msgindex = json['msgindex'] as int?;
-    //imageFile = json['imageFile'];
-    if (json['messages'] != null) {
-      messages = <ChatMessage>[];
-      json['messages'].forEach((v) {
-        messages!.add(new ChatMessage.fromJson(v));
-      });
-    }
-    actionBy = json['actionBy'];
-    chatId = json['chatId'];
-    eId = json['eId'];
+    name = json["customerName"] != null ? json["customerName"].toString() : "";
+    messageText =
+        json["lastMessage"] != null ? json["lastMessage"].toString() : "";
+    imageURL = json["customerIconUrl"] == null || json["customerIconUrl"] == ""
+        ? 'asset/images/pp.png'
+        : json["customerIconUrl"];
+    time = json["lastModifiedOn"]["date"].toString();
+    actionBy =
+        json["handlingAgent"] != null ? json["handlingAgent"].toString() : "";
+    chatId = json["chatId"] != null ? json["chatId"].toString() : "";
+    eId = json["eId"] != null ? json["eId"].toString() : "";
+    messages = <ChatMessage>[];
+    json['messages'].forEach((v) {
+      messages!.add(new ChatMessage.fromAPItoJson(v));
+      print(v);
+    });
+    actionBy = json['actionBy'] != null ? json['actionBy'].toString() : "";
+    chatId = json['chatId'] != null ? json["chatId"].toString() : "";
+    ;
+    eId = json['eId'] != null ? json["eId"].toString() : "";
   }
 
-  Map<String, dynamic> toJson() {
+  ChatUsers.fromJson1(Map<String, dynamic> data) {
+    imageURL = data['imageUrl'];
+    name = data['name'];
+    messageText = data['messageText'];
+    msgindex = data['msgindex'];
+    time = data['time'];
+    actionBy = data['actionBy'];
+    chatId = data['chatId'];
+    eId = data['eId'];
+    messages = <ChatMessage>[];
+    var temp = data["messages"];
+    if (temp != null)
+      temp.forEach((v) {
+        print(v.toString());
+        messages!.add(ChatMessage.fromLocaltoJson(v));
+      });
+  }
+
+  Map<dynamic, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['imageUrl'] = this.imageURL;
     data['name'] = this.name;
-    // data['msgindex'] = this.msgindex;
-    //data['imageFile'] = this.imageFile;
-    if (this.messages != null) {
-      data['messages'] = this.messages!.map((v) => v.toJson()).toList();
-    }
+    data['messageText'] = this.messageText;
+    data['msgindex'] = this.msgindex;
+    data['time'] = this.time;
+    data["messages"] = this.messages;
+    data['actionBy'] = this.actionBy;
     data['actionBy'] = this.actionBy;
     data['chatId'] = this.chatId;
-    data['eId'] = this.eId;
+    data['eId'] = this.eId as String;
     return data;
-  }
-
-  @override
-  String toString() {
-    return 'ChatUsers{name: $name, messageText: $messageText, imageURL: $imageURL, time: $time, msgindex: $msgindex}';
   }
 }
