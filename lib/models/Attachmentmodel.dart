@@ -1,41 +1,61 @@
 class Attachment {
-  bool? isAttachment;
+  bool? isDocument;
   String? name;
   String? id;
+  String? type;
+  String? contentType;
   String? url;
   String? desc;
-  String? contentType;
-  String? type;
 
   Attachment(
-      {this.isAttachment,
+      {this.isDocument,
       this.name,
       this.id,
-      this.url,
-      this.desc,
+      this.type,
       this.contentType,
-      this.type});
+      this.url,
+      this.desc});
+//json["message"] != null ? json["message"] as String : "";
+  Attachment.fromJson(Map<dynamic, dynamic> json) {
+    isDocument =
+        json['isDocument'] != null ? json["isDocument"] as bool : false;
 
-  factory Attachment.fromJson(Map<String, dynamic> json) {
-    return Attachment(
-        isAttachment: true,
-        name: json['name'],
-        id: json['id'],
-        url: json['url'],
-        desc: json['desc'],
-        contentType: json['contentType'],
-        type: json['type']);
+    name = json['name'] != null ? json["name"] as String : "";
+
+    id = json['id'] != null ? json["id"] as String : "";
+    type = json['type'] != null ? json["type"] as String : "";
+    contentType =
+        json['contentType'] != null ? json["contentType"] as String : "";
+    url = json['url'] != null ? json["url"] as String : "";
+    desc = json['desc'] != null ? json["desc"] as String : "";
+  }
+  Attachment.fromAPItoJson(Map<dynamic, dynamic> json) {
+    isDocument =
+        json['isDocument'] != null ? json["isDocument"] as bool : false;
+
+    name = json['name'] != null ? json["name"] as String : "";
+
+    id = json['id'] != null ? json["id"] : "";
+    type = json['type'] != null
+        ? json["type"] == 1
+            ? "IMAGE"
+            : ""
+        : "";
+    contentType =
+        json['contentType'] != null ? json["contentType"] as String : "";
+    url = json['url'] != null ? json["url"] as String : "";
+    desc = json['desc'] != null ? json["desc"] as String : "";
   }
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['isAttachment'] = this.isAttachment;
-    data['name'] = this.name;
-    data['id'] = this.id;
-    data['url'] = this.url;
-    data['desc'] = this.desc;
-    data['contentType'] = this.contentType;
-    data['type'] = this.type;
+  Map<dynamic, dynamic> toJson() {
+    final Map<dynamic, dynamic> data = new Map<dynamic, dynamic>();
+    data['isDocument'] = this.isDocument as bool;
+    data['name'] = this.name as String;
+    data['id'] = this.id as String;
+    data['type'] = this.type as String;
+    data['contentType'] = this.contentType as String;
+    data['url'] = this.url as String;
+    data['desc'] = this.desc as String;
     return data;
   }
 }

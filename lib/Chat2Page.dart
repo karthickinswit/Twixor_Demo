@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -13,6 +15,7 @@ import 'API/apidata-service.dart';
 import 'package:connectivity/connectivity.dart';
 
 //var connectivityResult = (Connectivity().checkConnectivity());
+List<ChatUsers> chatUsers = [];
 
 class profilePage extends StatefulWidget {
   //File fileImg;
@@ -29,7 +32,6 @@ class profilePage extends StatefulWidget {
 
 class _profilePage extends State<profilePage>
     with SingleTickerProviderStateMixin {
-  List<ChatUsers> chatUsers = [];
   // late ConnectivityResult _previousResult;
   // late ConnectivityResult connectivityResult;
 
@@ -69,7 +71,7 @@ class _profilePage extends State<profilePage>
 
   @override
   Widget TabsScreen() {
-    channelconnect();
+    // channelconnect();
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -132,8 +134,7 @@ class _profilePage extends State<profilePage>
                 builder: (context, snapshot) {
                   print("snapChat data -> ${snapshot.data.toString()}");
                   if (snapshot.hasData) {
-                    List<ChatUsers> chatUsers =
-                        snapshot.data as List<ChatUsers>;
+                    chatUsers = snapshot.data as List<ChatUsers>;
                     print('receiver data -> $chatUsers');
                     return ListView.builder(
                       itemCount: chatUsers.length,
@@ -155,21 +156,98 @@ class _profilePage extends State<profilePage>
                                 int.parse(time!),
                                 isUtc: true)
                             .toString();
-                        return ConversationList(
-                          name: name!,
-                          messageText: messageText!,
-                          imageUrl: imageURL!,
-                          time: a.toString(),
-                          isMessageRead:
-                              (index == 0 || index == 3) ? true : false,
-                          msgindex: index,
-                          messages: messages!,
-                          actionBy: actionBy!,
-                          chatId: chatId!,
-                          eId: eId!,
-                          attachments: Attachment(isAttachment: false),
-                          jsonData: chatUsers[index],
+                        ////////////////////////////////
+                        return GestureDetector(
+                          onTap: () {
+                            //print();
+
+                            var imageUrl = imageURL;
+                            print("conversationPage");
+
+                            ChatUsers? userData;
+                            String userDetails = jsonEncode(chatUsers[index]);
+
+                            Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            ChatDetailPage(userDetails, "")))
+                                .then((value) {
+                              // chatUsers.forEach((v) {
+                              //   print("ValueChat Id ${value.runtimeType}");
+                              //   if (v.chatId == value.chatId) {
+                              //     v = value;
+                              //     print("Updated");
+                              //   }
+                              // })
+
+                              chatUsers[chatUsers.indexWhere((element) =>
+                                      element.chatId == value.chatId)]
+                                  .messages = value.messages;
+                              setState(() {});
+                            });
+                          },
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 10),
+                            child: Row(
+                              children: <Widget>[
+                                Expanded(
+                                  child: Row(
+                                    children: <Widget>[
+                                      CircleAvatar(
+                                        backgroundImage:
+                                            AssetImage(imageURL.toString()),
+                                        maxRadius: 30,
+                                      ),
+                                      SizedBox(
+                                        width: 16,
+                                      ),
+                                      Expanded(
+                                        child: Container(
+                                          color: Colors.transparent,
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: <Widget>[
+                                              Text(
+                                                name.toString(),
+                                                style: TextStyle(fontSize: 16),
+                                              ),
+                                              SizedBox(
+                                                height: 6,
+                                              ),
+                                              Text(
+                                                messages![messages.length - 1]
+                                                    .messageContent
+                                                    .toString(),
+                                                style: TextStyle(
+                                                    fontSize: 13,
+                                                    color: Colors.grey.shade600,
+                                                    fontWeight: time != null
+                                                        ? FontWeight.bold
+                                                        : FontWeight.normal),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Text(
+                                  time.toString(),
+                                  style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: time != null
+                                          ? FontWeight.bold
+                                          : FontWeight.normal),
+                                ),
+                              ],
+                            ),
+                          ),
                         );
+                        ///////////////////////////////
                       },
                     );
                   } else
@@ -197,20 +275,7 @@ class _profilePage extends State<profilePage>
                   var a = DateTime.fromMillisecondsSinceEpoch(int.parse(time!),
                           isUtc: true)
                       .toString();
-                  return ConversationList(
-                    name: name!,
-                    messageText: messageText!,
-                    imageUrl: imageURL!,
-                    time: a.toString(),
-                    isMessageRead: (index == 0 || index == 3) ? true : false,
-                    msgindex: index,
-                    messages: messages!,
-                    actionBy: actionBy!,
-                    chatId: chatId!,
-                    eId: eId!,
-                    attachments: Attachment(isAttachment: false),
-                    jsonData: chatUsers[index],
-                  );
+                  return ConversationList(context, chatUsers[index]);
                 }
                 return CircularProgressIndicator();
               },
@@ -221,7 +286,53 @@ class _profilePage extends State<profilePage>
       ),
     );
   }
+
+  getBack(dynamic value) {
+    print("Getback");
+    var temp = value as ChatUsers;
+    //jsonData = temp;
+    print(chatUsers.length);
+    chatUsers.asMap().forEach((key, value) {
+      print(value.chatId);
+    });
+    chatUsers.forEach((v) {
+      if (v.chatId == temp.chatId) {
+        v = temp;
+        print("Updated");
+      }
+    });
+
+    print(temp.chatId);
+    // return value;
+
+//    ChatMessage.fromLocaltoJson(value);
+  }
 }
+
+Widget ConversationList(BuildContext context, ChatUsers chatUser) {
+  return Container();
+}
+
+// getBack(dynamic value) {
+//   print("Getback");
+//   var temp = value as ChatUsers;
+//   //jsonData = temp;
+//   print(chatUsers.length);
+//   chatUsers.asMap().forEach((key, value) {
+//     print(value.chatId);
+//   });
+//   chatUsers.forEach((v) {
+//     if (v.chatId == temp.chatId) {
+//       v = temp;
+//       print("Updated");
+//     }
+//   });
+
+//   print(temp.chatId);
+//   // return value;
+
+// //    ChatMessage.fromLocaltoJson(value);
+// }
 
 Widget MyCustomeHeader() {
   return Container(
@@ -229,11 +340,7 @@ Widget MyCustomeHeader() {
     child: AppBar(
       automaticallyImplyLeading: false,
       bottom: PreferredSize(
-          child: Container(
-              // color: Colors.grey,
-              // height: 0.0,
-              ),
-          preferredSize: Size.fromHeight(10.0)),
+          child: Container(), preferredSize: Size.fromHeight(10.0)),
       backgroundColor: Colors.white,
       foregroundColor: Colors.black,
       actions: [

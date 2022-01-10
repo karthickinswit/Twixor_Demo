@@ -1,5 +1,6 @@
 // ignore_for_file: unnecessary_new
 
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -24,7 +25,7 @@ void main() {
 class AttachmentsPage extends StatelessWidget {
   int? msgindex;
   int mediaType;
-  List<ListTileList>? messageList = [];
+  List<Attachment> attachmentList = [];
 
   Attachment? attachments;
 
@@ -58,45 +59,46 @@ class AttachmentsPage extends StatelessWidget {
             body: TabBarView(
               children: [
                 FutureBuilder(
-                  builder: (context, snapshot) {
-                    print("Attachment data -> ${snapshot.data.toString()}");
-                    if (snapshot.hasData) {
-                      var messageList = snapshot.data as List<Attachment>;
-                      print('receiver data -> ${messageList.length}');
-                      return ListView.builder(
-                        itemCount: messageList.length,
-                        shrinkWrap: true,
-                        // scrollDirection: Axis.horizontal,
-                        padding: EdgeInsets.only(top: 10),
-                        physics: ClampingScrollPhysics(),
-                        itemBuilder: (context, index) {
-                          return ListTile(
-                              trailing: Text(
-                                messageList[index].type.toString(),
-                              ),
-                              title: Text("${messageList[index].desc}"),
-                              onTap: () {
-                                jsonData;
-
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => ChatDetailPage(
-                                            jsonData, messageList[index])));
-                              });
-                        },
-                      );
-                    } else
-                      return Center(child: CircularProgressIndicator());
-                  },
-                  //future: getAttachments(mediaType)
-                ),
+                    builder: (context, snapshot) {
+                      // print("Attachment data -> ${snapshot.data.toString()}");
+                      if (snapshot.hasData) {
+                        attachmentList = snapshot.data as List<Attachment>;
+                        // print('receiver data -> ${messageList.length}');
+                        return ListView.builder(
+                          itemCount: attachmentList.length,
+                          shrinkWrap: true,
+                          // scrollDirection: Axis.horizontal,
+                          padding: EdgeInsets.only(top: 10),
+                          physics: ClampingScrollPhysics(),
+                          itemBuilder: (context, index) {
+                            return ListTile(
+                                trailing: Text(
+                                  attachmentList[index].desc.toString(),
+                                ),
+                                title: Text("${attachmentList[index].name}"),
+                                onTap: () {
+                                  jsonData;
+                                  //  Navigator.of(context).pop(jsonData);
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => ChatDetailPage(
+                                              jsonData,
+                                              jsonEncode(
+                                                  attachmentList[index]))));
+                                });
+                          },
+                        );
+                      } else
+                        return Center(child: CircularProgressIndicator());
+                    },
+                    future: getAttachments(mediaType)),
                 FutureBuilder(
                   builder: (context, snapshot) {
-                    print("Attachment data -> ${snapshot.data.toString()}");
+                    // print("Attachment data -> ${snapshot.data.toString()}");
                     if (snapshot.hasData) {
                       var messageList = snapshot.data as List<ListTileList>;
-                      print('receiver data -> ${messageList.length}');
+                      // print('receiver data -> ${messageList.length}');
                       return ListView.builder(
                         itemCount: messageList.length,
                         shrinkWrap: true,

@@ -20,31 +20,28 @@ Map<String, String> mainheader = {
   "authentication-token": authToken
 };
 
-// Future<List<Attachment>> getAttachments(int mediaType) async {
-//   List<Attachment>? attachment = [];
-//   final response = await http.get(
-//       Uri.parse(url +
-//           "artifacts?type=${mediaType.toString()}&from=0&perPage=10&desc=&visibility=public"),
-//       headers: mainheader);
-//   print(response.body.toString());
+Future<List<Attachment>> getAttachments(int mediaType) async {
+  List<Attachment>? attachments = [];
+  final response = await http.get(
+      Uri.parse(url +
+          "artifacts?type=${mediaType.toString()}&from=0&perPage=10&desc=&visibility=public"),
+      headers: mainheader);
+  print(response.body.toString());
 
-//   if (response.statusCode == 200) {
-//     //print(response.body.toString());
-//     //print(response.body.toString());
-//     var obj = json.decode(response.body); //.replaceAll("\$", ""));
-//     var messages = obj["response"]["artifacts"];
-//     print(obj["response"]["artifacts"].length);
-//     for (var obj1 = 0; obj1 < messages.length; obj1++) {
-//       var obj2 = messages[obj1]["data"];
-//       print(obj2.runtimeType);
-//       attachment.add(Attachment.fromJson(obj2));
+  if (response.statusCode == 200) {
+    //print(response.body.toString());
+    //print(response.body.toString());
+    var obj = json.decode(response.body); //.replaceAll("\$", ""));
+    var obj1 = obj["response"]["artifacts"];
+    for (var i = 0; i < obj1.length; i++) {
+      attachments.add(Attachment.fromAPItoJson(obj1[i]["data"]));
+    }
+    print(obj1.runtimeType);
 
-//       print(attachment.toString());
-//     }
-//     return attachment;
-//   }
-//   return attachment;
-// }
+    return attachments;
+  }
+  return attachments;
+}
 
 Future<List<ChatUsers>> getChatUserLists() async {
   final response =
@@ -87,27 +84,27 @@ Future<List<ChatUsers>> getChatUserLists() async {
   return chatUsersData;
 }
 
-class ChatData {
-  late String message;
-  late String contentType;
-  late String imageUrl;
+uploadmage(
+  Attachment attachment,
+  objFile,
+) async {
+  var headers = {
+    'authentication-token':
+        'D+hsmfpocX0zksWgM8BC+5JI8xHugmxj/+LYQc521vwfXZJCEMLuKFgxM9RtZPcl'
+  };
+  var request = http.MultipartRequest(
+      'POST', Uri.parse('https://aim.twixor.com/e/drive/upload'));
+  request.fields.addAll({'message': 'Cat03.jpg', 'multipart': 'image/jpeg'});
+  request.files
+      .add(await http.MultipartFile.fromPath('file', objFile.path.toString()));
+  request.headers.addAll(headers);
 
-  late String actionType;
-  late String actionBy;
-  late String status;
-  late String actionId;
-  late String actedOn;
-  //ChatData()
-  getChatData(obj) {
-    this.message = obj["message"];
+  var response = await request.send();
 
-    this.contentType = obj["contentType"];
-    this.imageUrl = obj["contentType"];
-
-    this.actionType = obj["actionType"];
-    this.actionBy = obj["actionBy"];
-    this.status = obj["status"];
-    this.actionId = obj["actionId"];
-    this.actedOn = obj["actedOn"];
+  if (response.statusCode == 200) {
+    var temp = await response.stream.asBroadcastStream();
+    print(temp.toString());
+  } else {
+    print(response.reasonPhrase);
   }
 }

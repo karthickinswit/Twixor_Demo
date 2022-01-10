@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:twixor_demo/API/apidata-service.dart';
+import 'package:twixor_demo/models/Attachmentmodel.dart';
+import 'package:twixor_demo/models/SendMessageModel.dart';
 import 'package:twixor_demo/models/chatMessageModel.dart';
 import 'package:web_socket_channel/io.dart';
 
@@ -34,7 +36,7 @@ class ChatPageState extends State<SocketDemo> {
   void initState() {
     connected = false;
     msgtext.text = "";
-    channelconnect();
+    // channelconnect();
     super.initState();
   }
 
@@ -120,7 +122,7 @@ class ChatPageState extends State<SocketDemo> {
       print(json.encode(data).toString());
       channel?.sink.add(json.encode(data)); //send message to reciever channel
     } else {
-      channelconnect();
+      // channelconnect();
       print("Websocket is not connected.");
     }
   }
@@ -289,8 +291,51 @@ channelconnect() {
   // return connected;
 }
 
-Future<void> sendmessage(String sendmsg, String actionBy, String chatId,
-    String eId, bool isAttachment, Attachement attachement) async {
+getSocketResponse(String msgAction) async {
+  IOWebSocketChannel? channel;
+  try {
+    Map<String, String> mainheader = {
+      "Content-type": "application/json",
+      "authentication-token": authToken
+    };
+
+    channel = IOWebSocketChannel.connect("wss://aim.twixor.com/actions",
+        headers: mainheader);
+    channel.stream.listen(
+      (message) {
+        var message1 = json.decode(message);
+        if (message1["action"] == "onOpen") {
+          // connected = true;
+
+          print("Connection establised.");
+        } else if (message1["action"] == "agentReplyChat") {
+          print("Message sent");
+        } else if (message1 == "customerStartChat") {
+          print("Customer Start Chat");
+          return message;
+        } else if (message1 == "waitingInviteAccept") {
+          print("waitingInviteAccept");
+        } else if (message1 == "waitingTransferAccept") {
+          print("waitingTransferAccept");
+        }
+      },
+      onDone: () {
+        //if WebSocket is disconnected
+        print("Web socket is closed");
+        // setState(() {
+        //   //connected = false;
+        // });
+      },
+      onError: (error) {
+        print(error.toString());
+      },
+    );
+  } catch (_) {
+    print("SocketIO Error");
+  }
+}
+
+Future<void> sendmessage(SendMessage sendMessage) async {
   IOWebSocketChannel? channel;
   bool connected = false;
 
@@ -303,13 +348,14 @@ Future<void> sendmessage(String sendmsg, String actionBy, String chatId,
 
   var data = {};
   data["action"] = "agentReplyChat";
-  data["actionBy"] = actionBy;
-  data["actionType"] = 3;
-  data["attachment"] = {};
-  data["chatId"] = chatId;
-  data["contentType"] = "TEXT";
-  data["eId"] = eId;
-  data["message"] = sendmsg.toString();
-  print(json.encode(data).toString());
+  data["actionBy"] = sendMessage.actionBy;
+  data["actionType"] = sendMessage.actionType;
+  data["attachment"] =
+      sendMessage.attachment!.url != null ? sendMessage.attachment : {};
+  data["chatId"] = sendMessage.chatId;
+  data["contentType"] = sendMessage.contentType;
+  data["eId"] = sendMessage.eId;
+  data["message"] = sendMessage.message;
+  var temp = print(json.encode(data).toString());
   channel.sink.add(json.encode(data)); //send message to reciever channel
 }

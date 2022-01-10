@@ -44,7 +44,8 @@ class ChatUsers {
       messages!.add(new ChatMessage.fromAPItoJson(v));
       print(v);
     });
-    actionBy = json['actionBy'] != null ? json['actionBy'].toString() : "";
+    actionBy =
+        json['handlingAgent'] != null ? json['handlingAgent'].toString() : "";
     chatId = json['chatId'] != null ? json["chatId"].toString() : "";
     ;
     eId = json['eId'] != null ? json["eId"].toString() : "";
@@ -59,6 +60,7 @@ class ChatUsers {
     actionBy = data['actionBy'];
     chatId = data['chatId'];
     eId = data['eId'];
+    actionBy = data["actionBy"];
     messages = <ChatMessage>[];
     var temp = data["messages"];
     if (temp != null)
